@@ -43,7 +43,7 @@ app.get('/', function(req, res){
                 if(todo[i].done){
                     completed.push(todo[i].item)
                 }else{
-                    tasks.push(todo[i].item)
+                    tasks.push(todo[i])
                 }
             }
         }
@@ -69,17 +69,30 @@ app.post('/addtask', function(req, res){
 });
 
 app.post('/removetask', function(req, res){
-    var removeTask = req.body.check;
-    //push to completed
-    if(typeof removeTask === 'string'){
-        tasks.splice(tasks.indexOf(removeTask), 1);
-    }else if(typeof removeTask === 'object'){
-        for (var i = 0; i < removeTask.length; i++){
-            tasks.splice(tasks.indexOf(removeTask[i]), 1);
+    var id = req.body.check;
+    if(typeof id === 'string'){
+        Todo.updateOne({_id: id},{done:true},function(err){
+            if(err){
+                console.log(err)
+            }
+        })
+    }else if(typeof id === 'object'){
+        for (var i = 0; i < id.length; i++){
+            Todo.updateOne({_id: id[i]},{done:true},function(err){
+                if(err){
+                    console.log(err)
+                }
+            })
         }
     }
     res.redirect('/');
 });
+
+app.post('/deleteTodo', function(){
+    // write the function for delete using ID
+    // handle for single and multiple delete requests (req.body.delete)
+    // Todo.deleteOne(id, function(err){})
+})
 
 //server setup
 app.listen(port, function(){
