@@ -37,6 +37,8 @@ app.get('/', function(req, res){
         if(err){
             console.log(err);
         }else{
+            tasks = [];
+            completed = [];
             for(i = 0; i< todo.length; i++){
                 if(todo[i].done){
                     completed.push(todo[i].item)
@@ -52,10 +54,18 @@ app.get('/', function(req, res){
 
 //add post method /addtask
 app.post('/addtask', function(req, res){
-    var newTask = req.body.newtask;
-    tasks.push(newTask);
-    //return index
-    res.redirect('/');
+    let newTodo = new Todo({
+        item: req.body.newtask,
+        done: false
+    })
+    newTodo.save(function(err, todo){
+        if (err){
+            console.log(err)
+        } else {
+            //return index
+            res.redirect('/');
+        }
+    });
 });
 
 app.post('/removetask', function(req, res){
