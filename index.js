@@ -1,21 +1,14 @@
-//require express
+
 var express = require('express');
-//require body-parser
 var bodyParser = require("body-parser");
-//require mongoose
 var mongoose = require("mongoose");
-//require node-fetch
 var fetch = require('node-fetch');
-//create express object, call express
 var app = express();
-//get port information
 const port = process.env.PORT || 3000;
 
-//tell application to use EJS for templates
+
 app.set('view engine', 'ejs');
-//make styles public
 app.use(express.static("public"));
-//tell app to use Body parser
 app.use(bodyParser.urlencoded({extended: true}));
 
 //Connection Information for Mongo
@@ -27,14 +20,10 @@ mongoose.Promise = global.Promise;
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-//Couple of items todo
 var tasks = [];
-//completed items
 var completed = [];
 
-//get home page /
 app.get('/', function(req, res){
-    //query to mongoDB for todos
     Todo.find(function(err, todo){
         if(err){
             console.log(err);
@@ -50,11 +39,9 @@ app.get('/', function(req, res){
             }
         }
     });
-    //return something to home page
-    res.render('index', {tasks: tasks, completed: completed}); //add completed variable to ejs ex {a:a, b:b}
+    res.render('index', {tasks: tasks, completed: completed});
 });
 
-//add post method /addtask
 app.post('/addtask', function(req, res){
     let newTodo = new Todo({
         item: req.body.newtask,
@@ -112,28 +99,23 @@ app.post('/deleteTodo', function(req, res){
     res.redirect('/');
 })
 
-//fetch nasa information and send to front end as JSON data
 app.get('/nasa', function(req, res){
-    let nasaData;
     fetch('https://api.nasa.gov/planetary/apod?api_key=7lqr4qoVCaJweZv9hp89XHb6he3UEqesrowGwAMa')
     .then(res => res.json())
     .then(data => {
-        nasaData = data;
-        res.json(nasaData);
+        res.render('nasa',{data:data});
     });
 })
 
-//get our data for the todo list from Mongo and send to front end as JSON
-app.get('/todoListJson', function(req, res){
-    //query to mongoDB for todos
-    Todo.find(function(err, todo){
-        if(err){
-            console.log(err);
-        }else{
-            res.json(todo);
-        }
+app.get('/nasaDate', function(req, res){
+    //wrote logic for random date
+    let date = '2019-12-16'
+    fetch('https://api.nasa.gov/planetary/apod?api_key=7lqr4qoVCaJweZv9hp89XHb6he3UEqesrowGwAMa&date=' + date)
+    .then(res => res.json())
+    .then(data => {
+        res.render('nasaRandom', {data: data})
     });
-});
+})
 
 //server setup
 app.listen(port, function(){
