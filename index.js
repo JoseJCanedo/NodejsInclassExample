@@ -117,6 +117,16 @@ app.get('/nasaDate', function(req, res){
     });
 })
 
+app.get('/nasaButtonClick', function(req, res){
+    //wrote logic for random date
+    let date = '2019-12-16'
+    fetch('https://api.nasa.gov/planetary/apod?api_key=7lqr4qoVCaJweZv9hp89XHb6he3UEqesrowGwAMa&date=' + date)
+    .then(res => res.json())
+    .then(data => {
+        res.json(data)
+    });
+})
+
 //server setup
 app.listen(port, function(){
     console.log('Listening on ' + port)
